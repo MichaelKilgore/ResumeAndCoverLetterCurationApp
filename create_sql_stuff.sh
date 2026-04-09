@@ -20,20 +20,19 @@ DROP TABLE IF EXISTS bullet_point;
 DROP TABLE IF EXISTS skills;
 DROP TABLE IF EXISTS job;
 DROP TABLE IF EXISTS company;
+DROP TABLE IF EXISTS project;
 
 -- Drop enum types
 DROP TYPE IF EXISTS item_type_enum;
 DROP TYPE IF EXISTS skill_type_enum;
 
 -- Create enum types
-CREATE TYPE item_type_enum AS ENUM ('WORK_EXPERIENCE', 'RELEVANT_PROJECT');
 CREATE TYPE skill_type_enum AS ENUM ('LANGUAGE', 'SYSTEMS_AND_DATA', 'TOOLS');
 
 -- Table 1: Company
 CREATE TABLE company (
     uuid        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_name TEXT NOT NULL,
-    item_type   item_type_enum NOT NULL
+    company_name TEXT NOT NULL
 );
 
 -- Table 2: Job
@@ -45,26 +44,33 @@ CREATE TABLE job (
     company_uuid UUID NOT NULL REFERENCES company(uuid) ON DELETE CASCADE
 );
 
--- Table 3: Bullet Point
-CREATE TABLE bullet_point (
+-- Table 3: Personal Project
+CREATE TABLE project (
     uuid                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    bullet_point_description  TEXT NOT NULL,
-    job_uuid                  UUID NOT NULL REFERENCES job(uuid) ON DELETE CASCADE
+    project_name              TEXT NOT NULL,
+    project_type              TEXT NOT NULL
 );
 
--- Table 4: Keywords
-CREATE TABLE keywords (
-    uuid               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    keyword            TEXT NOT NULL,
-    bullet_point_uuid  UUID NOT NULL REFERENCES bullet_point(uuid) ON DELETE CASCADE
+-- Table 4: Bullet Point
+CREATE TABLE bullet_point (
+    uuid                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sentence                  TEXT NOT NULL,
+    value                     INT NOT NULL,
+    job_uuid                  UUID REFERENCES job(uuid) ON DELETE CASCADE,
+    project_uuid              UUID REFERENCES project(uuid) ON DELETE CASCADE,
+    CONSTRAINT bullet_point_owner_check CHECK (
+        (job_uuid IS NOT NULL AND project_uuid IS NULL) OR
+        (job_uuid IS NULL AND project_uuid IS NOT NULL)
+    )
 );
 
 -- Table 5: Skills
-CREATE TABLE skills (
+CREATE TABLE skill (
     uuid        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     skill_type  skill_type_enum NOT NULL,
     skill       TEXT NOT NULL
 );
+
 
 EOF
 
