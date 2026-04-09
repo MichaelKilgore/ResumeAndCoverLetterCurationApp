@@ -51,6 +51,34 @@ python3 insert_bullet_point.py --project 'Deep Swing Institutional System' --sen
 
 
 
+# ''' SKILLS '''
 
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'Python'
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'Python3'
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'Java'
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'Scala'
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'SQL'
+python3 insert_skill.py --skill_type 'LANGUAGE' --skill 'TypeScript'
+
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Distributed Systems'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Data Pipelines'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'ML Infrastructure'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Forecasting Systems'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'S3'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'EMR'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Glue'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Step Functions'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Lambda'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Apache Airflow'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Athena'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'ECR'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Spark'
+python3 insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Terraform'
+
+python3 insert_skill.py --skill_type 'TOOLS' --skill 'CI/CD'
+python3 insert_skill.py --skill_type 'TOOLS' --skill 'Git'
+python3 insert_skill.py --skill_type 'TOOLS' --skill 'AI Tools'
+python3 insert_skill.py --skill_type 'TOOLS' --skill 'React'
+python3 insert_skill.py --skill_type 'TOOLS' --skill 'Docker'
 
 

@@ -1,3 +1,5 @@
 Go
 Ruby
-
+Jest
+tailwind
+Computer Science

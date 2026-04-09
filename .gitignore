@@ -1,3 +1,6 @@
 .venv/
 PROJECTS.txt
 PROMO_DOC.txt
+__pycache__/
+credentials.json
+token.pickle
