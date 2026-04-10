@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DB_NAME="resume_app"
-DB_USER="postgres"
+DB_USER="michael"
 
 # sudo -u postgres psql
 

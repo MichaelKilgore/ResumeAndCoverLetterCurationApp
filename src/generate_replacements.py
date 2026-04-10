@@ -1,3 +1,4 @@
+from typing import LiteralString
 import psycopg2
 import anthropic
 from pydantic import BaseModel
@@ -45,14 +46,14 @@ def _get_skills() -> dict:
 
 def _get_skipped_keywords() -> list[str]:
     res = []
-    with open('skipped_keywords.txt', 'r') as f:
+    with open('const/skipped_keywords.txt', 'r') as f:
         lines = f.readlines()
         for l in lines:
             res.append(l.strip())
 
     return res
 
-def generate_replacements(jd_key_words: list[str]) -> dict:
+def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict:
     s = set(jd_key_words)
 
 
@@ -68,7 +69,6 @@ def generate_replacements(jd_key_words: list[str]) -> dict:
 
             l[-1]['bps'].append({ 'bullet_point': bp, 'jd_key_word_matches': key_word_matches })
 
-    # get skills
     skills = _get_skills()
 
     for i,skill in enumerate(skills):

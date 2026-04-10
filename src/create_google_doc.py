@@ -68,8 +68,8 @@ def replace_placeholders(docs_service, doc_id, replacements):
 def main():
     company = 'Drillbit'
 
-    raw_hard_skills = 'Computer Science, postgresql, typescript, tailwind, node.js, docker, Jest, LLMs, CSS, NPM'
-    raw_soft_skills = 'Collaboration'
+    raw_hard_skills: str = 'Computer Science, postgresql, typescript, tailwind, node.js, docker, Jest, LLMs, CSS, NPM'
+    raw_soft_skills: str = 'Collaboration'
 
     jd_key_words = raw_hard_skills.split(', ') + raw_soft_skills.split(', ')
 
