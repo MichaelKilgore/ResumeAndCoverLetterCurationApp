@@ -1,0 +1,19 @@
+You have 3 tasks.
+
+1. For each of these job titles there is a list of bullet points, I need you to select 4 bullet points based on these 4 criteria. \n\n
+
+  1. The number of key words that the bullet point covers. Remember its import that the key word is an exact match so SQL is not the same as postgreSQL for example.
+  2. Additionally the variety of bullet points, across all 4 bullet points we want to cover as many key words as possible.
+  3. Finally some of these bullet points are reworded versions of other bullet points, make sure not to include duplicates.
+  4. order the bullets by a combination of how good a bullet point is and how many key words it has. A bullet point is good if it seems complex and makes use of data points such as improved forecasting by 10%.
+
+job data: {l}
+
+2. return all the skills given but remove duplicates. Like for example Python and Python3 are the same, pick which one to display based on whether or not it is a valid key word, if they both either are or are not key words then just pick one. Also try and keep related languages together in list response, like for example CSS and HTML are associated together so put them close together.
+
+skills: {skills}
+
+3. Lastly you also need to pick one project and the top 4 best bullet points based on the same criteria as the same criteria as for the jobs. But remember we want to cover as many key words as possible across jobs, skills, and project.
+
+projects: {projects}
+

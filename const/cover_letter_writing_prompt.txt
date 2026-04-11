@@ -1,0 +1,17 @@
+Follow the following instructions for writing a cover letter:
+
+{cover_letter_instructions}
+
+Here is my resume to help you construct this cover letter:
+
+{resume}
+
+Here is my promo doc from when I worked at Amazon:
+
+{promo_doc}
+
+Here is the job description:
+
+{job_description}
+
+Use the instructions, the information about me, and the job description to write my personalized cover letter.

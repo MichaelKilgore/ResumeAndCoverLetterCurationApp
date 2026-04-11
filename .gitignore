@@ -4,3 +4,4 @@ PROMO_DOC.txt
 __pycache__/
 credentials.json
 token.pickle
+job_description.txt

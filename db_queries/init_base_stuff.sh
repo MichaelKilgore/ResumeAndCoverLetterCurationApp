@@ -10,7 +10,11 @@
 
 python3 src/insert_bullet_point.py --job 'Software Development Engineer II' --sentence 'Led the launch of promotion depth awareness features using AWS S3, Glue, Step Functions, EMR, and CDK, improving forecast accuracy by 10% during peak promotional periods.' --value 10
 
+
+
 python3 src/insert_bullet_point.py --job 'Software Development Engineer II' --sentence 'Served as a technical point of contact for multiple forecasting initiatives, coordinating design reviews and driving delivery across ML and infrastructure teams.' --value 9
+python3 src/insert_bullet_point.py --job 'Software Development Engineer II' --sentence 'Served as a technical point of contact for multiple forecasting initiatives, leading cross-functional collaboration across ML and infrastructure teams to coordinate design reviews and drive delivery.' --value 9
+
 
 python3 src/insert_bullet_point.py --job 'Software Development Engineer II' --sentence 'Designed and implemented components of distributed forecasting services spanning data processing, training, inference, and analysis, partnering with ML scientists and platform teams to support multiple production pipelines processing millions of records.' --value 8
 
@@ -44,7 +48,7 @@ python3 src/insert_bullet_point.py --project 'AI Stock Forecasts' --sentence 'Im
 
 
 # Deep Swing Institutional System
-python3 src/insert_bullet_point.py --project 'Deep Swing Institutional System' --sentence 'Architected an automated options decisioning system that detected unusual institutional trades, assembled multi-source financial context, and used an LLM to produce structured trading recommendations with confidence and pricing guidance.' --value 10
+python3 src/insert_bullet_point.py --project 'Deep Swing Institutional System' --sentence 'Architected an automated options decision making system that detects unusually large institutional trades, then assembles multi-source financial context, and uses an LLM to produce structured trading recommendations with confidence and pricing guidance.' --value 10
 python3 src/insert_bullet_point.py --project 'Deep Swing Institutional System' --sentence 'Engineered integrations with Massive and FMP APIs to support real-time signal ingestion and contextual analysis across price action, earnings, insider activity, and corporate events.' --value 9
 python3 src/insert_bullet_point.py --project 'Deep Swing Institutional System' --sentence 'Improved reliability of LLM-based decision workflows by enforcing typed outputs with Pydantic and persisting recommendation history in PostgreSQL for downstream retrieval and analysis.' --value 8
 python3 src/insert_bullet_point.py --project 'Deep Swing Institutional System' --sentence 'Delivered real-time Telegram alerting for actionable buy recommendations, enabling fast user response to high-premium trade opportunities.' --value 7
@@ -59,6 +63,9 @@ python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'Java'
 python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'Scala'
 python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'SQL'
 python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'TypeScript'
+python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'CSS'
+python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'HTML'
+python3 src/insert_skill.py --skill_type 'LANGUAGE' --skill 'PostgreSQL'
 
 python3 src/insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Distributed Systems'
 python3 src/insert_skill.py --skill_type 'SYSTEMS_AND_DATA' --skill 'Data Pipelines'

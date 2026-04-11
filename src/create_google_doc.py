@@ -6,6 +6,7 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 import os
 import pickle
+from create_cover_letter import create_cover_letter
 
 from generate_replacements import generate_replacements
 
@@ -45,7 +46,7 @@ def copy_template(drive_service, template_doc_id, new_title):
     return copied_file["id"]
 
 
-def replace_placeholders(docs_service, doc_id, replacements):
+def replace_placeholders(docs_service, doc_id, replacements) -> str:
     requests = []
 
     for placeholder, value in replacements.items():
@@ -64,6 +65,31 @@ def replace_placeholders(docs_service, doc_id, replacements):
         body={"requests": requests}
     ).execute()
 
+    return doc_id
+
+def create_cover_letter_doc(docs_service, drive_service, company: str, cover_letter_text: str) -> str:
+    file_metadata = {
+        "name": f"{company} Cover Letter",
+        "mimeType": "application/vnd.google-apps.document"
+    }
+    new_file = drive_service.files().create(body=file_metadata, fields="id").execute()
+    doc_id = new_file["id"]
+
+    docs_service.documents().batchUpdate(
+        documentId=doc_id,
+        body={
+            "requests": [
+                {
+                    "insertText": {
+                        "location": {"index": 1},
+                        "text": cover_letter_text
+                    }
+                }
+            ]
+        }
+    ).execute()
+
+    return doc_id
 
 def main():
     company = 'Drillbit'
@@ -71,23 +97,42 @@ def main():
     raw_hard_skills: str = 'Computer Science, postgresql, typescript, tailwind, node.js, docker, Jest, LLMs, CSS, NPM'
     raw_soft_skills: str = 'Collaboration'
 
-    jd_key_words = raw_hard_skills.split(', ') + raw_soft_skills.split(', ')
-
-    replacements = generate_replacements(jd_key_words)
 
     docs_service, drive_service = get_services()
 
-    new_doc_id = copy_template(
-        drive_service,
-        TEMPLATE_DOC_ID,
-        f"{company} Resume"
-    )
+    answer = input("\nDo you want to generate a resume (y/n): ").strip().lower()
 
-    replace_placeholders(docs_service, new_doc_id, replacements)
+    new_doc_id = TEMPLATE_DOC_ID
+    if answer == 'y':
+        jd_key_words = raw_hard_skills.split(', ') + raw_soft_skills.split(', ')
 
-    print(f"Created doc: https://docs.google.com/document/d/{new_doc_id}/edit")
+        replacements = generate_replacements(jd_key_words)
+
+
+        new_doc_id = copy_template(
+            drive_service,
+            TEMPLATE_DOC_ID,
+            f"{company} Resume"
+        )
+
+        replace_placeholders(docs_service, new_doc_id, replacements)
+
+        print(f"Created resume doc: https://docs.google.com/document/d/{new_doc_id}/edit")
+
+    answer = input("\nDo you want to generate a cover letter (y/n): ").strip().lower()
+
+    if answer == 'y':
+        cover_letter_text = create_cover_letter(docs_service, resume_doc_id=new_doc_id)
+
+        cover_letter_doc_id = create_cover_letter_doc(docs_service, drive_service, company, cover_letter_text)
+
+        print(f"Created cover letter doc: https://docs.google.com/document/d/{cover_letter_doc_id}/edit")
+
 
 
 if __name__ == "__main__":
     main()
+
+
+
 

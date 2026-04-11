@@ -48,6 +48,7 @@ CREATE TABLE job (
 CREATE TABLE project (
     uuid                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_name              TEXT NOT NULL,
+    project_date_range        TEXT NOT NULL,
     project_type              TEXT NOT NULL
 );
 

@@ -31,9 +31,9 @@ SELECT 'Software Engineer Intern', '2021-10-01'::DATE, '2022-02-01'::DATE, uuid
 FROM ins_wkit;
 
 -- Projects
-INSERT INTO project (project_name, project_type) VALUES
-    ('AI Stock Forecasts',             'Personal Project'),
-    ('Deep Swing Institutional System', 'Upwork Contract');
+INSERT INTO project (project_name, project_date_range, project_type) VALUES
+    ('AI Stock Forecasts', 'Sept 2025 - Present', 'Personal Project'),
+    ('Deep Swing Institutional System', 'Feb 2026', 'Upwork Contract');
 
 EOF
 

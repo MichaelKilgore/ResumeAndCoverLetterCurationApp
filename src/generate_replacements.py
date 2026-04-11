@@ -13,9 +13,16 @@ class SkillGroup(BaseModel):
     skill_type: str
     skills: list[str]
 
+class Project(BaseModel):
+    project_name: str
+    project_type: str
+    project_date_range: str
+    bps: list[str]
+
 class SelectionResponse(BaseModel):
     jobs: list[JobSelection]
     skill_groups: list[SkillGroup]
+    project: Project
 
 def _get_bullet_points(job_title: str) -> list[str]:
     conn = psycopg2.connect(dbname="resume_app")
@@ -32,7 +39,23 @@ def _get_bullet_points(job_title: str) -> list[str]:
     conn.close()
     return [row[0] for row in rows]
 
-def _get_skills() -> dict:
+def _get_project_bullet_points(project_name: str) -> list[dict]:
+    conn = psycopg2.connect(dbname="resume_app")
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT bp.sentence, bp.value
+        FROM bullet_point bp
+        JOIN project p ON bp.project_uuid = p.uuid
+        WHERE p.project_name = %s
+        ORDER BY bp.value DESC
+    """, (project_name,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return [row[0] for row in rows]
+
+
+def _get_skills(jd_key_words):
     conn = psycopg2.connect(dbname="resume_app")
     cur = conn.cursor()
     cur.execute("""
@@ -42,7 +65,16 @@ def _get_skills() -> dict:
     rows = cur.fetchall()
     cur.close()
     conn.close()
-    return [ { 'skill': row[0], 'skill_type': row[1] } for row in rows ]
+
+    skills = [ { 'skill': row[0], 'skill_type': row[1] } for row in rows ]
+
+    for i,skill in enumerate(skills):
+        if skill['skill'] in jd_key_words:
+            skills[i]['is_keyword'] = True
+        else:
+            skills[i]['is_keyword'] = False
+
+    return skills
 
 def _get_skipped_keywords() -> list[str]:
     res = []
@@ -53,10 +85,7 @@ def _get_skipped_keywords() -> list[str]:
 
     return res
 
-def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict:
-    s = set(jd_key_words)
-
-
+def _get_jobs(jd_key_words):
     l = []
     for title in ('Software Development Engineer II', 'Software Development Engineer I', 'Software Engineer Intern'):
         l.append({ 'job title': title, 'bps': [] })
@@ -64,19 +93,13 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
 
 
         for bp in bullet_points:
-
             key_word_matches = [key_word for key_word in jd_key_words if key_word.lower() in bp.lower()]
 
             l[-1]['bps'].append({ 'bullet_point': bp, 'jd_key_word_matches': key_word_matches })
 
-    skills = _get_skills()
+    return l
 
-    for i,skill in enumerate(skills):
-        if skill['skill'] in jd_key_words:
-            skills[i]['is_keyword'] = True
-        else:
-            skills[i]['is_keyword'] = False
-
+def _notify_user_of_missing_key_words(jd_key_words, l, skills, projects):
     matched_keywords = set()
     for job_entry in l:
         for bp_entry in job_entry['bps']:
@@ -84,7 +107,11 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
 
     skipped_matches = _get_skipped_keywords()
 
-    unmatched_keywords = s - matched_keywords - set(skipped_matches) - set([skill['skill'] for skill in skills])
+    project_bps = []
+    for project in projects:
+        project_bps += project['bullet_points']
+
+    unmatched_keywords = set([x.lower() for x in list(jd_key_words)]) - set([x.lower() for x in list(matched_keywords)]) - set([x.lower() for x in skipped_matches]) - set([skill['skill'].lower() for skill in skills]) - set([x.lower() for x in project_bps])
     if unmatched_keywords:
         print(f"\nWarning: The following JD keywords had no matches in any bullet point:")
         for kw in sorted(unmatched_keywords):
@@ -93,7 +120,16 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
         if answer != 'y':
             raise RuntimeError("Aborted: unmatched JD keywords with no bullet point coverage.")
 
+def _get_projects(jd_key_words):
+    res = []
+    for (p,d_r,p_t) in ( ('AI Stock Forecasts', 'Sept 2025 - Present','Personal Project'), ('Deep Swing Institutional System', 'Feb 2026', 'Upwork Contract') ):
+        bps = _get_project_bullet_points(p)
 
+        res.append( { 'project_name': p, 'bullet_points': bps, 'project_date_range': d_r, 'project_type': p_t } )
+
+    return res
+
+def _call_claude(jobs, skills, projects) -> SelectionResponse:
     client = anthropic.Anthropic()
 
     tool = {
@@ -101,6 +137,11 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
         "description": "Submit the selected bullet points for each job title",
         "input_schema": SelectionResponse.model_json_schema()
     }
+
+    with open('const/bullet_point_selection_prompt.txt', 'r') as f:
+        prompt_template = f.read()
+
+    prompt = prompt_template.format(l=jobs, skills=skills, projects=projects)
 
     message = client.messages.create(
         model="claude-opus-4-6",
@@ -110,16 +151,18 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
         messages=[
             {
                 "role": "user",
-                "content": f"For each of these job titles there is a list of bullet points, I need you to select 4 bullet points based on 3 criteria. \n\n1. The number of key words that the bullet point covers. Remember its import that the key word is an exact match so SQL is not the same as postgreSQL for example.\n2. Additionally the variety of bullet points, across all 4 bullet points we want to cover as many key words as possible.\n3. Finally some of these bullet points are reworded versions of other bullet points, make sure not to include duplicates.\nAlso P.S. order the bullets by a combination of how good a bullet point is and how many key words it has. A bullet point is good if it seems complex and makes use of data points such as improved forecasting by 10%.\n\njob data:\n\n{l}\n\nAdditionally for skills return all the skills given but remove duplicates. Like for example Python and Python3 are the same, pick which one to display based on whether or not it is a valid key word, if they both either are or are not key words then just pick one.\n\nskills data:\n\n{skills}"
+                "content": prompt
             }
         ]
     )
 
     tool_use_block = next(b for b in message.content if b.type == "tool_use")
-    res = SelectionResponse.model_validate(tool_use_block.input)
+    return SelectionResponse.model_validate(tool_use_block.input)
 
+def _get_replacements(res: SelectionResponse) -> dict:
     replacements = {}
 
+    ''' set jobs replacements '''
     for job in res.jobs:
         prefix = '{{' + JOB_TITLE_TO_PREFIX[job.title]
         for i, bp in enumerate(job.bps):
@@ -132,6 +175,7 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
             elif i == 3:
                 replacements[prefix+'FOUR'+'}}'] = bp
 
+    ''' set skills replacements '''
     for skill_group in res.skill_groups:
         if skill_group.skill_type == 'LANGUAGE':
             replacements['{{LANGUAGES}}'] = ', '.join(skill_group.skills)
@@ -140,6 +184,40 @@ def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict
         if skill_group.skill_type == 'TOOLS':
             replacements['{{TOOLS}}'] = ', '.join(skill_group.skills)
 
+    ''' set project replacements '''
+    project = res.project
+    replacements['{{PROJECT_CHOICE}}'] = project.project_name
+    replacements['{{PROJECT_DATE_RANGE}}'] = project.project_date_range
+    replacements['{{PROJECT_TYPE}}'] = project.project_type
+    prefix = '{{' + 'PROJECT_BULLET_'
+    for i, bp in enumerate(project.bps):
+        if i == 0:
+            replacements[prefix+'ONE'+'}}'] = bp
+        elif i == 1:
+            replacements[prefix+'TWO'+'}}'] = bp
+        elif i == 2:
+            replacements[prefix+'THREE'+'}}'] = bp
+        elif i == 3:
+            replacements[prefix+'FOUR'+'}}'] = bp
+
+    return replacements
+
+
+
+def generate_replacements(jd_key_words: list[str] | list[LiteralString]) -> dict:
+    s = set(jd_key_words)
+
+    l = _get_jobs(jd_key_words)
+
+    skills = _get_skills(jd_key_words)
+
+    projects = _get_projects(jd_key_words)
+
+    _notify_user_of_missing_key_words(jd_key_words, l, skills, projects)
+
+    res = _call_claude(l, skills, projects)
+
+    replacements = _get_replacements(res)
 
     return replacements
 
