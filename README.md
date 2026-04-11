@@ -23,7 +23,7 @@ After you've done that you can just run src/create_google_doc.py and it should w
 
 ### Additional Notes
 
-I didn't make this application flexible. I only solved my use case. For me currently I have 3 jobs of history and a project of history you will want to update _get_replacements accordingly to suit your use case most likely.
+I didn't make this application flexible. I only solved my use case which you can see in the image above. You will probably need to make some updates to replacements generation to make this app solve your exact use case.
 
 ### Potential Improvements
 
