@@ -25,3 +25,6 @@ After you've done that you can just run src/create_google_doc.py and it should w
 
 I didn't make this application flexible. I only solved my use case. For me currently I have 3 jobs of history and a project of history you will want to update _get_replacements accordingly to suit your use case most likely.
 
+### Potential Improvements
+
+I was reading online you could potentially set up an MCP connection to google doc. This could make things even more convenient cause you could ask claude to also make sure your resume is 1 page long. But I heard that can be quite expensive plus your likely to hit rate limits so I figured I can just do that part manually on my own. But if you wanted to optimize this process further then you could do it that way.
