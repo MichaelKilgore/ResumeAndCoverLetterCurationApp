@@ -94,19 +94,17 @@ def create_cover_letter_doc(docs_service, drive_service, company: str, cover_let
 def main():
     company = 'Drillbit'
 
-    raw_hard_skills: str = 'Computer Science, postgresql, typescript, tailwind, node.js, docker, Jest, LLMs, CSS, NPM'
-    raw_soft_skills: str = 'Collaboration'
-
-
     docs_service, drive_service = get_services()
 
     answer = input("\nDo you want to generate a resume (y/n): ").strip().lower()
 
+    with open('job_description.txt', 'r') as f:
+        job_description = f.read()
+
     new_doc_id = TEMPLATE_DOC_ID
     if answer == 'y':
-        jd_key_words = raw_hard_skills.split(', ') + raw_soft_skills.split(', ')
 
-        replacements = generate_replacements(jd_key_words)
+        replacements = generate_replacements(job_description)
 
 
         new_doc_id = copy_template(
